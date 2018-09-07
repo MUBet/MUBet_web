@@ -1,0 +1,528 @@
+  <!doctype html>
+
+  <html lang="en">
+      <head>
+          <title>MUBet</title>
+          <meta name="Description" content="A decentralised, provably fair, ETH based betting system. Make your own games, have bets placed, earn a share of the winnings!">
+          <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+          <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" type="text/css"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/dropdown.css">
+          <link rel="stylesheet" type="text/css"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/search.css">
+          <link rel="stylesheet" type="text/css"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/transition.css">
+          <link rel="stylesheet" type="text/css" href="styleog.css">
+          <style>
+              card-body{
+              overflow: auto
+              }
+              /* The search field */
+              #myInput {
+              border-box: box-sizing;
+              background-position: 14px 12px;
+              background-repeat: no-repeat;
+              font-size: 16px;
+              padding: 14px 20px 12px 45px;
+              border: none;
+              border-bottom: 1px solid #ddd;
+              }
+              /* The search field when it gets focus/clicked on */
+              #myInput:focus {outline: 3px solid #ddd;}
+              /* The container
+              <div>
+              - needed to position the dropdown content */
+              .dropdown {
+              position: relative;
+              display: inline-block;
+              }
+              /* Dropdown Content (Hidden by Default) */
+              .dropdown-content {
+              position: relative;
+              background-color: #f6f6f6;
+              min-width: 230px;
+              border: 1px solid #ddd;
+              z-index: 1;
+              }
+              /* Links inside the dropdown */
+              .dropdown-content a {
+              color: black;
+              padding: 12px 16px;
+              text-decoration: none;
+              }
+              /* Change color of dropdown links on hover */
+              .dropdown-content a:hover {background-color: #f1f1f1}
+          </style>
+          <!-- Top navigation -->
+          <!--<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary" id="navMenu">
+              <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                  <ul class="navbar-nav mr-auto">
+                      <li class="nav-item active">
+                          <a class="nav-link" href="#">Place a Bet<span class="sr-only">(current)</span></a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="addGame">Add Games</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="endGame">End Game</a>
+                      </li>
+                  </ul>
+                  <ul class = "navbar-nav ml-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="faq">FAQ</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="https://ethgasstation.info/">ETH Gas Station</a>
+                  </li>
+              </div>
+          </nav> -->
+
+          <div class="topnav">
+            <!-- Left-aligned links (default) -->
+            <a href="/" class="active">Place a Bet</a>
+            <a href="addGame">Add Games</a>
+            <a href="endGame">End Games</a>
+
+            <div class="topnav-right">
+               <a href="faq">FAQ</a>
+               <a href="https://etherscan.io/address/0x517be460E08A7EcCe448f54B41658c0BfB0d8674#code">Contract Code</a>
+               <a href="https://ethgasstation.info/">ETH Gas Station</a>
+
+            </div>
+
+          </div>
+			<bg id="con" z-index=1 position=relative class="imgbox center-fit"></bg>
+			  <main align="center" style="right: 0px; left: 0px;">
+      <body>
+          <div align="center">
+              <img src= "web_logo.png" width="550px">
+              <yoke id="logo-container"></yoke>
+          </div>
+          <div class="col-8 mx-auto" style="border-radius:4%;">
+              <div class="card-deck">
+                  <div class="card" style=" border-radius: 15px;">
+                      <div class="card-header text-secondary">
+                          <h4>Place a Bet</h4>
+                      </div>
+                      <div class="card-body">
+                          <p id = "tests" class="sizingSmall">You are currently using...</p>
+                          <form id="myForm" style="position:relative;">
+                              <label>
+                                  <h5>Please choose a game from the list:</h5>
+                              </label>
+                              <select id = "slct1" name="slct1" class="ui search selection dropdown" style="width:100%" onchange='pickSides(this.id, "slct2")'>
+                                  <option value=-1>Select...</option>
+                              </select>
+                              <br>
+                          </form>
+                      </div>
+                  </div>
+                  <div id="BetCard" class="card" style="border-radius: 15px; display:none" >
+                      <div class="card-header text-secondary">
+                          <h4 id="headertag">Bet</h4>
+                      </div>
+                      <div class="card-body" >
+                          <p id = "tests" class="sizingSmall"></p>
+                          <form id="myForm2" style="position:relative;">
+                              <label>
+                                  <h5>Please choose a team to bet on:</h5>
+                              </label>
+                              <select id="slct2" name="slct2" style="width:100%" onchange='enableButtonOnSideChoice()' class="ui search selection dropdown">
+                                  <option value=-1>Select...</option>
+                              </select>
+                              <br>
+                              <label>
+                                  <h5>Please enter the amount you would like to bet:</h5>
+                              </label>
+                              <br>
+                              <input type="number" class = "aesthetic" id = "bets" step="0.005" min  = "0.005" value = "0.005" onchange="updateSubButton()" disabled> ETH</input>
+                              <br><br>
+                              <button id="subButton" type="button"  value = "Submit" onclick ="placeBetJS()" disabled>Place 0.005 ETH bet</button>
+                          </form>
+                      </div>
+                      <div class="card-footer text-muted">
+                        <small class = "text-muted"  id="cardFooter"> </small>
+
+                    </div>
+                  </div>
+              </div>
+          </div>
+          <br><br>
+          <div id="BetDeck" class = "card-deck">
+
+          </div>
+      <footer>
+          <p class = "sizingSmallW" id="gasNotif">When placing bets it is recommended to set the gas price to a safe value.
+              <br>The current median gas price is:
+          </p>
+          <p class = "sizingSmallW">Source: <a href="https://ethgasstation.info/">ETH Gas Station</a></p>
+          <br>
+          <div id="foot"></div>
+      </footer>
+    </body>
+	</main>
+      </head>
+  </html>
+
+
+<script src="contract.js"></script>
+<script src="metamask.js"></script>
+<script src="constellation.js"></script>
+<script>
+constellationPreset("con", "Hot Sparks");
+</script>
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/dropdown.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/search.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/transition.js"></script>
+
+<!-- <script src="List.js"></script> -->
+<script>
+
+  var optionArrayCon = [];
+
+
+  $('#slct1')
+    .dropdown()
+  ;
+  $('#slct2')
+    .dropdown()
+  ;
+  function enableButtonOnSideChoice() {
+    if (document.getElementById("slct2").value==-1) {
+      document.getElementById("bets").disabled=true;
+      document.getElementById("subButton").disabled=true;
+      document.getElementById("subButton").style.background="#a9a9a9";
+    } else {
+      document.getElementById("bets").disabled=false;
+      document.getElementById("subButton").disabled=false;
+      document.getElementById("subButton").style.background="#df4020";
+    }
+  }
+
+  function placeBetJS(slct1, slct2) {
+	  instance.placeBet.estimateGas(document.getElementById('slct1').value, document.getElementById('slct2').value, {from: web3.eth.accounts[0], gasPrice:gasPrice*1000000000, value:1000000000000000000*document.getElementById("bets").value}, function(error, result) {
+		  console.log(result + " estimated gas required")
+      console.log("Arguments:", document.getElementById('slct1').value, document.getElementById('slct2').value)
+		  instance.placeBet(document.getElementById('slct1').value, document.getElementById('slct2').value, {from: web3.eth.accounts[0], gasPrice:gasPrice*1000000000, gas:Math.floor(result*1.1), value:1000000000000000000*document.getElementById("bets").value}, function(error, result2){
+			  console.log(result2);
+			  if (typeof result2==='undefined') return;
+            if (net==1) {
+              window.open("https://etherscan.io/tx/" + result2);
+            } else if (net==3) {
+              window.open("https://ropsten.etherscan.io/tx/" + result2);
+            }
+		  })
+	  })
+
+  }
+
+  function pickSides(s1,s2){
+
+    var s1 = document.getElementById(s1);
+    console.log(s1);
+  	var s2 = document.getElementById(s2);
+    var sub = document.getElementById("bets");
+    var x = document.getElementById("BetCard");
+
+    try {
+      while (typeof s2.options[1] !== 'undefined') {
+        s2.options[1].remove();
+        if(s2[0] != null){
+          s2.remove(1);
+          s2.remove(1);
+        }
+      }
+    } catch (err) {
+    }
+
+    if (s1.value==-1) {
+      sub.disabled = true;
+      document.getElementById("subButton").disabled=true;
+      document.getElementById("subButton").style.background="#a9a9a9";
+      x.style.display = "none";
+      return;
+    }
+    if(s1.value >= 0){
+      x.style.display = "block";
+    }
+
+    instance.getName(s1.value, function(error, totalSides) {
+      console.log(totalSides);
+      var divide = Number(totalSides[6]);
+      document.getElementById("headertag").innerHTML = totalSides[0];
+      var d = new Date(totalSides[4]*1000).toString(); // The 0 there is the key, which sets the date to the epoch
+      document.getElementById("cardFooter").innerHTML = "This bet will expire on: " + d;
+      for(var i = 0; i<totalSides[6]; i++){
+        instance.getSidesById(s1.value, i, function(error, result) {
+          var newOption = document.createElement("option");
+          if(result[1] == 0){
+            newOption.text = (result[0] + " (" + roundNumber(result[1]*0.000000000000000001, 4) + " ETH pledged, odds at ∞)");
+          }
+          else{
+            newOption.text = (result[0] + " (" + roundNumber(result[1]*0.000000000000000001, 4) + " ETH pledged, odds at " + roundNumber(result[1]/totalSides[2], 4));
+          }
+          console.log(result);
+          newOption.value = result[0];
+          document.getElementById("slct2").add(newOption);
+        });
+      }
+    });
+    updateSubButton();
+  }
+
+  function roundNumber(num, scale) {
+  if (Math.round(num) != num) {
+    if (Math.pow(0.005, scale) > num) {
+      return 0;
+    }
+    var sign = Math.sign(num);
+    var arr = ("" + Math.abs(num)).split(".");
+    if (arr.length > 1) {
+      if (arr[1].length > scale) {
+        var integ = +arr[0] * Math.pow(10, scale);
+        var dec = integ + (+arr[1].slice(0, scale) + Math.pow(10, scale));
+        var proc = +arr[1].slice(scale, scale + 1)
+        if (proc >= 5) {
+          dec = dec + 1;
+        }
+        dec = sign * (dec - Math.pow(10, scale)) / Math.pow(10, scale);
+        return dec;
+      }
+    }
+  }
+  return num;
+}
+
+  var betArray = [];
+
+  function liveGames(){
+
+    instance.numGames(function(error, result){
+      for(var i = 0; i<result['c'][0]; i++){//result[0] --> index of gameName String
+        instance.getName(i, function(error, result2) {
+          if (!result2[1]) return; //result2[6] --> unique index of gameID
+          var newOption = document.createElement("option");
+          newOption.text = (result2[0] + " (" + roundNumber(result2[2]*0.000000000000000001, 4) + " ETH pledged)");//result2[0] --> index of gameName String
+          newOption.value = result2[7];//result2[0] --> index of unique gameID
+          document.getElementById("slct1").add(newOption);
+        });
+      }
+    });
+
+
+
+  }
+
+/*try {
+  function BetDeckFunction() {
+      instance.numGames(function(error, result) {
+        for(var i = 0; i<result['c'][0]; i++){//result[0] --> index of gameName String
+          instance.getName(i, function(error, totalSides){
+             console.log(result);
+            console.log(totalSides);
+            if(totalSides[1]==true){
+                  var cardDeck = document.getElementById("BetDeck");
+
+                  var card = document.createElement("div");
+                  card.className = 'card';
+                  cardDeck.appendChild(card);
+
+                  var cardBlock = document.createElement("div");
+                  cardBlock.className = 'card-block';
+                  card.appendChild(cardBlock);
+
+                  var cardHeader = document.createElement("div");
+                  cardHeader.className = 'card-header text-secondary';
+                  cardBlock.appendChild(cardHeader);
+
+                  var headerTag = document.createElement("h4");
+                  headerTag.innerHTML = (totalSides[0] + " (" + roundNumber(totalSides[2]*0.000000000000000001, 4) + " ETH pledged)");
+                  cardHeader.appendChild(headerTag);
+
+                  var cardBody = document.createElement("div");
+                  cardBody.className = 'card-body';
+                  cardBlock.appendChild(cardBody);
+
+                  var test = document.createElement("p");
+                  test.className = 'sizingSmall';
+                  test.setAttribute("id", "tests");
+                  cardBody.appendChild(test);
+
+                  var myForm = document.createElement("form");
+                  myForm.setAttribute("id", "myForm2");
+                  myForm.style.position = "relative";
+                  cardBody.appendChild(myForm);
+
+                  var label = document.createElement('label');
+                  myForm.appendChild(label);
+
+                  var textBetTeam = document.createElement("h5");
+                  textBetTeam.innerHTML = 'Please choose a team to bet on:';
+                  label.appendChild(textBetTeam);
+
+                  var select = document.createElement("select");
+                  var stringID = "slct" + totalSides[7];
+                  select.setAttribute("id", stringID);
+                  select.name = 'slct3';
+                  select.style.width = "100%";
+                  //select.onchange = function(){enableButtonOnSideChoice();};
+                  myForm.appendChild(select);
+
+                  for(var j = 0; j <totalSides[6]; j++){
+                      console.log(totalSides);
+                      instance.getSidesById(totalSides[7], j, function(error, result) {
+                        console.log(result);
+
+                      var newOption = document.createElement("option");
+                      console.log(result);
+                      newOption.text = (result[0] + " (" + roundNumber(result[1]*0.000000000000000001, 4) + " ETH pledged) Odds at " + roundNumber(result[1]/totalSides[2], 4));
+                      newOption.value = result[0];
+                      select.appendChild(newOption);
+                    });
+                  }
+
+                  var option = document.createElement("option");
+                  option.setAttribute("value", -1);
+                  option.innerHTML = 'Select...';
+                  select.appendChild(option);
+
+                  var br = document.createElement("br");
+                  myForm.appendChild(br);
+
+                  var label2 = document.createElement('label');
+                  myForm.appendChild(label2);
+
+                  var textAmountBet = document.createElement("h5");
+                  textBetTeam.innerHTML = 'Please enter the amount you would like to bet:';
+                  label2.appendChild(textAmountBet);
+
+                  var br2 = document.x("br");
+                  myForm.appendChild(br2);
+
+                  var bets = document.createElement("input");
+                  bets.setAttribute("type", "number");
+                  bets.className = 'aesthetic';
+                  var betID = "bets" + totalSides[7];
+                  bets.setAttribute("id", betID);
+                  bets.step = "0.005";
+                  bets.min = "0.005";
+                  bets.value = "0.005";
+                  bets.disabled = true;
+                  bets.onchange = updateSubButton;
+                  myForm.appendChild(bets);
+
+
+
+                  var br3 = document.createElement("br");
+                  myForm.appendChild(br3);
+
+                  var br4 = document.createElement("br");
+                  myForm.appendChild(br4);
+
+                  var subButton = document.createElement("button");
+                  var subButtonID = "subButton" + totalSides[7];
+                  subButton.setAttribute("id", "subButtonID");
+                  subButton.value = "Submit";
+                  subButton.onclick = placeBetJS;
+                  subButton.innerHTML = 'Place 0.005 ETH bet';
+                  subButton.disabled = true;
+                  myForm.appendChild(subButton);
+
+                  if (slctID.value==-1) {
+                  document.getElementById("bets").disabled=true;
+                  document.getElementById("subButton").disabled=true;
+                  document.getElementById("subButton").style.background="#a9a9a9";
+                } else {
+                  document.getElementById("bets").disabled=false;
+                  document.getElementById("subButton").disabled=false;
+                  document.getElementById("subButton").style.background="#df4020";
+                }
+
+                  if (price==-1) {
+                    url = "https://api.coinmarketcap.com/v2/ticker/1027/";
+                    request = new XMLHttpRequest();
+                    request.open("GET", url);
+                    request.onload = function() {
+                      price = JSON.parse(request.response)['data']['quotes']['USD']['price'];
+                      console.log("1 ETH = $" + price);
+                      document.getElementById('subButton').innerHTML=(' Place ' + document.getElementById('bets').value + ' ETH bet ($' + (Math.round(100*document.getElementById('bets').value*price)/100) + ')')
+                    }
+                    request.send()
+                  } else {
+                    document.getElementById('subButton').innerHTML=(' Place ' + document.getElementById('bets').value + ' ETH bet ($' + (Math.round(100*document.getElementById('bets').value*price)/100) + ')')
+                  }
+
+
+                  instance.placeBet.estimateGas(i, select.value, {from: web3.eth.accounts[0], gasPrice:gasPrice*1000000000, value:1000000000000000000*bets.value}, function(error, result) {
+              		  console.log(result + " estimated gas required")
+                    console.log("Arguments:", i, select.value)
+              		  instance.placeBet(i, select.value, {from: web3.eth.accounts[0], gasPrice:gasPrice*1000000000, gas:Math.floor(result*1.1), value:1000000000000000000*bets.value}, function(error, result2){
+              			  console.log(result2);
+              			  if (typeof result2==='undefined') return;
+                          if (net==1) {
+                            window.open("https://etherscan.io/tx/" + result2);
+                          } else if (net==3) {
+                            window.open("https://ropsten.etherscan.io/tx/" + result2);
+                          }
+              		  });
+              	  });
+
+                }
+              });
+            }
+          });
+        }
+
+} catch (e) {
+  setTimeout(function(){
+    window.location.reload(true);
+},100);
+}*/
+
+
+
+
+ function filterFunction() {
+   var input, filter, ul, li, option, i;
+   input = document.getElementById("myInput");
+   filter = input.value.toUpperCase();
+   div = document.getElementById("myDropdown");
+   option = div.getElementsByTagName("option");
+   for (i = 0; i < option.length; i++) {
+     if (option[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+       option[i].style.display = "";
+     } else {
+       option[i].style.display = "none";
+     }
+   }
+ }
+    var price = -1;
+
+    function updateSubButton() {
+      if (price==-1) {
+        url = "https://api.coinmarketcap.com/v2/ticker/1027/";
+        request = new XMLHttpRequest();
+        request.open("GET", url);
+        request.onload = function() {
+          price = JSON.parse(request.response)['data']['quotes']['USD']['price'];
+          console.log("1 ETH = $" + price);
+          document.getElementById('subButton').innerHTML=(' Place ' + document.getElementById('bets').value + ' ETH bet ($' + (Math.round(100*document.getElementById('bets').value*price)/100) + ')')
+        }
+        request.send()
+      } else {
+        document.getElementById('subButton').innerHTML=(' Place ' + document.getElementById('bets').value + ' ETH bet ($' + (Math.round(100*document.getElementById('bets').value*price)/100) + ')')
+      }
+    }
+
+    function setMax() {
+      console.log("Debug:" + web3.eth.accounts[0])
+      web3.eth.getBalance(web3.eth.accounts[0], function(error, result) {
+        console.log(result['c'][0]/10000);
+        document.getElementById("bets").max=result['c'][0]/10000;
+      })
+    }
+    //updateSubButton();
+
+</script>
